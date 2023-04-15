@@ -1,3 +1,5 @@
+import personsService from '../services/persons'
+
 const PersonForm = ({
     newName,
     setNewName,
@@ -8,6 +10,12 @@ const PersonForm = ({
     persons,
     setPersons
 }) => {
+
+    const clearForm = () => {
+        setNewName('')
+        setNewNumber('')
+    }
+
     const addNewPerson = e => {
         e.preventDefault()
         const newPersonObject = {
@@ -19,15 +27,33 @@ const PersonForm = ({
         const duplicateNumber = persons.filter(person => person.number===newNumber).length !== 0
 
         if (!duplicateName && !duplicateNumber) {
-        setPersons([...persons, newPersonObject])
-        setNewName('')
-        setNewNumber('')
+
+            personsService
+                .createNewPerson(newPersonObject)
+                .then(person => setPersons([...persons, person]))
+
+            clearForm()
+
         } else if (duplicateName && !duplicateNumber) {
-        alert(`${newName} already exists in phonebook`)
+            const duplicatePerson = persons.filter(person => person.name===newName)[0]
+            if (window.confirm(`${duplicatePerson.name} already exists. Replace old number with new one?`)) {
+                personsService.updatePerson(duplicatePerson.id, newPersonObject)
+                .then(updatedPerson => {
+                    setPersons(persons.map(person => person.id!==updatedPerson.id ? person : {...person, number: updatedPerson.number}))
+                    clearForm()
+                })
+            }
         } else if (!duplicateName && duplicateNumber) {
-        alert(`${newNumber} already exists in phonebook`)
+            const duplicatePerson = persons.filter(person => person.number===newNumber)[0]
+            if (window.confirm(`${duplicatePerson.number} already exists. Replace old name with new one?`)) {
+                personsService.updatePerson(duplicatePerson.id, newPersonObject)
+                .then(updatedPerson => {
+                    setPersons(persons.map(person => person.id!==updatedPerson.id ? person : {...person, name: updatedPerson.name}))
+                    clearForm()
+                })
+            }
         } else {
-        alert(`Person already exists in phonebook`)
+            alert(`Contact already exists in phonebook`)
         }
     }
 
