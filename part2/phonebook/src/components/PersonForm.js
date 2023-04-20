@@ -8,7 +8,10 @@ const PersonForm = ({
     handleNameChange,
     handleNumberChange,
     persons,
-    setPersons
+    setPersons,
+    setShowNotification,
+    setNotificationType,
+    setDeletionSubject
 }) => {
 
     const clearForm = () => {
@@ -30,10 +33,20 @@ const PersonForm = ({
 
             personsService
                 .createNewPerson(newPersonObject)
-                .then(person => setPersons([...persons, person]))
+                .then(person => {
+                    setPersons([...persons, person])
+                    setDeletionSubject(newName)
+                    setShowNotification(true)
+                    setNotificationType('suc')
 
-            clearForm()
-
+                    setTimeout(() => {
+                        setDeletionSubject(null)
+                        setShowNotification(false)
+                        setNotificationType(null)
+                        
+                        clearForm()
+                    }, 5000)
+                })
         } else if (duplicateName && !duplicateNumber) {
             const duplicatePerson = persons.filter(person => person.name===newName)[0]
             if (window.confirm(`${duplicatePerson.name} already exists. Replace old number with new one?`)) {

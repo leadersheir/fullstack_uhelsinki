@@ -1,7 +1,13 @@
 import personsService from '../services/persons'
 import Person from './Person'
 
-const Persons = ({ persons, setPersons }) => {
+const Persons = ({
+  setDeletionSubject,
+  setNotificationType,
+  setShowNotification,
+  setPersons,
+  persons
+}) => {
 
   const handleDeletePerson = person => {
 
@@ -9,6 +15,17 @@ const Persons = ({ persons, setPersons }) => {
       personsService
         .deletePerson(person.id)
         .then(setPersons(persons.filter(p => p.id !== person.id)))
+        .catch(err => {
+          setDeletionSubject(person.name)
+          setShowNotification(true)
+          setNotificationType('err')
+
+          setTimeout(() => {
+            setDeletionSubject(null)
+            setShowNotification(false)
+            setNotificationType(null)
+          }, 5000)
+        })
     }
   }
 

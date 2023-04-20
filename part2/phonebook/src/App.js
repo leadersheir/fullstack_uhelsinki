@@ -1,6 +1,7 @@
 import personsService from './services/persons'
 
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 
@@ -20,6 +21,10 @@ const App = () => {
 
   const [filterText, setFilterText] = useState('')
 
+  const [showNotification, setShowNotification] = useState(false)
+  const [notificationType, setNotificationType] = useState(null)
+  const [deletionSubject, setDeletionSubject] = useState(null)
+
   const handleNameChange = e => {
     setNewName(e.target.value)
   }
@@ -36,6 +41,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {showNotification ? <Notification name={deletionSubject} type={notificationType}/> : <></>}
       <Filter filterText={filterText} handleFilterTextChange={handleFilterTextChange} />
       <PersonForm 
         newName={newName}
@@ -46,8 +52,17 @@ const App = () => {
         handleNumberChange={handleNumberChange}
         persons={persons}
         setPersons={setPersons}
+        setShowNotification={setShowNotification}
+        setNotificationType={setNotificationType}        
+        setDeletionSubject={setDeletionSubject}
       />
-      <Persons persons={filteredPersons} setPersons={setPersons} />
+      <Persons
+        persons={filteredPersons}
+        setPersons={setPersons}
+        setDeletionSubject={setDeletionSubject}
+        setShowNotification={setShowNotification}
+        setNotificationType={setNotificationType}
+      />
     </div>
   )
 }
